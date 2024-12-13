@@ -6,4 +6,4 @@ Worked in R on finding relevent information concerning the core curriculum at Xa
 # 
 
 Volunteering for Presecutor Elect Connie Pillich:
-Worked in R and used past data from the board of elections to make visualizations and predict what might happen in the 2024 election.
+Worked in R and used past data from the board of elections to make visualizations and predict what might happen in the 2024 election. Experience in joining data sets with maps to make political maps based on precinct.
