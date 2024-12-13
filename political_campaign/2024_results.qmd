@@ -1,0 +1,87 @@
+---
+title: "Results 2024"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(sf)
+library(RColorBrewer)
+```
+
+You can add options to executable code like this
+
+```{r}
+results2024 <- read_excel("PillichPowers.xls")
+view(results2024)
+```
+
+```{r}
+
+
+map2024 <- st_zm(st_read("data/maps/precincts_2024.shp"))
+
+
+mapANDresults2024 <- left_join(map2024, results2024, by = c("PRECINCT" = "Precinct"))
+
+mapANDresults2024 %>% 
+  mutate(dropoff.prop = (1 - (`Total`/`Ballots Cast`))) %>%
+  ggplot(aes(fill=dropoff.prop)) +
+  geom_sf()+
+  labs(title = "2024 Court of Common Pleas Race Drop off", 
+       fill = "Drop off (%)", 
+       caption = "")+
+  scale_fill_gradientn(colours=brewer.pal(n=10,name="Spectral"),na.value = "transparent",
+                       breaks=c(0,.025,.05,.075,.1),labels=c("0%","2.5%","5%","7.5%","10%"),
+                       limits=c(0,.1)
+  )
+
+mapANDresults2024 <- mapANDresults2024 %>%
+  mutate(
+    Total = as.numeric(gsub(",", "", Total)),
+    `Ballots Cast` = as.numeric(gsub(",", "", `Ballots Cast`))
+  )
+
+mapANDresults2024 %>%
+  mutate(dropoff.prop = 1 - (`Total` / `Ballots Cast`)) %>%
+  ggplot(aes(fill = dropoff.prop)) +
+  geom_sf() +
+  labs(
+    title = "2024 Prosecutor Race Drop off",
+    fill = "Drop off (%)",
+    caption = ""
+  ) +
+  scale_fill_gradientn(
+    colours = brewer.pal(n = 10, name = "Spectral"),
+    na.value = "transparent",
+    breaks = c(0,0.05, 0.1, 0.15, 0.2),
+    labels = c("0%", "5%", "10%", "15%", "20%"),
+    limits = c(0, 0.2)
+  )
+```
+
+```{r}
+
+
+mapANDresults2024 %>%
+  mutate(Pillich.prop = `Total Votes...5`/(`Total Votes...5` + `Total Votes...8`)) %>%
+  ggplot(aes(fill=Pillich.prop)) +
+  geom_sf()+
+labs(title = "2024 Hamilton County Prosecutor Attorney",
+subtitle = "Connie Pillich (51.06%) vs Melissa Powers (48.94%)",
+fill = "",
+caption = "")+
+scale_fill_gradientn(colours=brewer.pal(n=6,name="RdBu"),na.value = "transparent",labels=c("100% Pillich","","50% / 50%","","100% Powers"),
+limits=c(0,1))
+```
